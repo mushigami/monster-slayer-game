@@ -9,6 +9,7 @@ const app = Vue.createApp({
       specialAttackRecharge: 0, // healing also increases charging duration
       healCharge: 3, // maximum number of healing you can do
       winner: null,
+      logMessages: [],
     };
   },
   computed: {
@@ -53,11 +54,13 @@ const app = Vue.createApp({
         const attackDamage = getRandomValue(5, 12);
         this.monsterHealth -= attackDamage;
         this.attackPlayer(); // maybe should be via a probability factor.
+        this.addLogMessage('player', 'attack', attackDamage);
     },
     attackPlayer() {
         const attackDamage = getRandomValue(8, 15);
         this.playerHealth -= attackDamage;
         this.playerHealth = this.playerHealth < 0 ? 0 : this.playerHealth;
+        this.addLogMessage('monster', 'attack', attackDamage);
         
     },
     specialAttackMonster(){
@@ -66,6 +69,7 @@ const app = Vue.createApp({
         this.monsterHealth -= attackDamage;
         this.monsterHealth = this.monsterHealth < 0 ? 0 : this.monsterHealth;
         this.attackPlayer();
+        this.addLogMessage('player', 'special-attack', attackDamage);
     },
     healPlayer(){
         this.healCharge--;
@@ -74,6 +78,7 @@ const app = Vue.createApp({
         this.playerHealth += healValue;
         this.playerHealth =  this.playerHealth > 100 ? 100 : this.playerHealth;
         this.attackPlayer();
+        this.addLogMessage('player', 'heal', healValue);
     },
     startGame(){
         this.playerHealth = 100;
@@ -81,10 +86,19 @@ const app = Vue.createApp({
         this.winner = null;
         this.specialAttackRecharge = 0;
         this.healCharge = 3;
+        this.logMessages = [];
 
     },
     surrender(){
         this.winner = 'monster';
+    },
+    addLogMessage(who, what, value){
+
+        this.logMessages.unshift({
+            actionBy: who,
+            actionType: what,
+            actionValue: value,
+        });
     }
   },
 });
