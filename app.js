@@ -6,7 +6,7 @@ const app = Vue.createApp({
     return {
       playerHealth: 100,
       monsterHealth: 100,
-      specialAttackCharge: 0, // healing also increases charging duration
+      specialAttackRecharge: 0, // healing also increases charging duration
       healCharge: 3, // maximum number of healing you can do
       winner: null,
     };
@@ -23,7 +23,7 @@ const app = Vue.createApp({
         }
     },
     mayUseSpecialAttack(){
-        return this.specialAttackCharge === 0;
+        return this.specialAttackRecharge === 0;
     },
     mayHeal(){
         return this.healCharge > 0;
@@ -47,8 +47,8 @@ const app = Vue.createApp({
   },
   methods: {
     attackMonster() {
-        if(this.specialAttackCharge > 0){
-            this.specialAttackCharge--;
+        if(this.specialAttackRecharge > 0){
+            this.specialAttackRecharge--;
         }
         const attackDamage = getRandomValue(5, 12);
         this.monsterHealth -= attackDamage;
@@ -61,7 +61,7 @@ const app = Vue.createApp({
         
     },
     specialAttackMonster(){
-        this.specialAttackCharge = 3;
+        this.specialAttackRecharge = 3;
         const attackDamage = getRandomValue(10, 25);
         this.monsterHealth -= attackDamage;
         this.monsterHealth = this.monsterHealth < 0 ? 0 : this.monsterHealth;
@@ -69,11 +69,22 @@ const app = Vue.createApp({
     },
     healPlayer(){
         this.healCharge--;
-        this.specialAttackCharge++;
+        this.specialAttackReharge++;
         const healValue = getRandomValue(8,20);
         this.playerHealth += healValue;
         this.playerHealth =  this.playerHealth > 100 ? 100 : this.playerHealth;
         this.attackPlayer();
+    },
+    startGame(){
+        this.playerHealth = 100;
+        this.monsterHealth = 100;
+        this.winner = null;
+        this.specialAttackRecharge = 0;
+        this.healCharge = 3;
+
+    },
+    surrender(){
+        this.winner = 'monster';
     }
   },
 });
